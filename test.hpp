@@ -560,4 +560,66 @@ Node * del(int val, Node * root){
 	}
 }
 
+//Extended Euclidean
+long long gcdExtended(long long a, long long b, long long *x, long long *y){
+    if (a == 0){
+        *x = 0, *y = 1;
+        return 1ll * b;
+    }
+ 
+    long long x1, y1;
+    long long gcd = gcdExtended(1ll * b%a, a, &x1, &y1);
+
+    *x = y1 - (b/a) * x1;
+    *y = x1;
+ 
+    return gcd;
+}
+
+// Mod inverse
+long long mod_inverse(long long a){
+    long long x, y;
+    long long g = gcdExtended(a, MOD_NUM, &x, &y);
+    if (g != 1) return -1;
+    else return MOD(x);
+}
+
+//Mod binom
+long long binom(long long n, long long k){
+	if(k == n || k == 0) return 1;
+	if(k > n || k < 0 || n < 0) return 0;
+	if(k == 1 || n == k + 1) return n;
+
+	return MOD(1ll * MOD(1ll * MOD(1ll * fac[n]) * facinverse[k]) * facinverse[n - k]);
+}
+// Also Lucas Theorem. Without mod, binom can be done in O(k) time
+
+// Lattice path from point (a, b) to (c, d) without crossing x-axis
+long long count_path(int a, int b, int c, int d){
+	if((c + d - a - b) % 2 != 0) return 0;
+
+	long long res = MOD((binom(c - a, (c1 + d - b - a)/2) - binom(c1 - a, (c + d - a + b)/2)));
+	return res;
+}
+
+// Safe mod
+#define MOD_NUM ((long long) (1E9 + 7))
+#define MOD(a) ((long long)(((a % MOD_NUM) + MOD_NUM) % MOD_NUM))
+
+// Quick mod inverse
+fac[1] = 1;
+FORI(maxm) if(i >= 2) fac[i] = MOD(fac[i - 1] * i);
+ for(int i = 2; i < maxm; i++)
+ 	if(ecul[i] == 0)
+ 		for(int s = 2 * i; s < maxm; s+=i)
+ 			ecul[s] = 1ll * i;
+
+FORI(maxm) if(i > 1) inverse[i] = (i < 4 || ecul[i] == 0) ? MOD(mod_inverse(1ll * i)) : MOD(1ll * inverse[ecul[i]] * inverse[(i) / ecul[i]]);
+
+// Catalan with rec C_n = 2(2n - 1)/(n + 1) C_{n - 1}
+// Catalan-like rec: a_0 = k, a_n = Aa_{n - 1} + Bconvolution_0^{n - 1}(n) is (4 + i)a_{n + 2} = (c + 2c(n + 2))a_{n + 1} - a * a * (n + 1)a_{n}
+// where c = a + 2bk
+catalan[0] = MOD(1ll);
+FORI(n) if(i > 0) catalan[i] = MOD(2ll * (2ll * i - 1) * MOD(1ll * catalan[i - 1] * MOD(inverse[i + 1])));
+
 #endif //TEST_H 
