@@ -267,7 +267,7 @@ long long get(int qs, int qe, int ss, int se, int si){
 
 	if(qs <= ss && se <= qe) return st[si];
 
-	int mid = ss + (se + ss) >> 1;
+	int mid = ss + (se - ss) >> 1;
 	return get(qs, qe, ss, mid, (si << 1) + 1) + get(qs, qe, mid + 1, se, (si << 1) + 2);
 }
 

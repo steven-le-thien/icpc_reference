@@ -3,7 +3,6 @@
 #include<cstring>
 #include<vector>
 #include<algorithm>
-#include<functional>
 
 #define DEBUG 0
 #define UPDATE_DEBUG 0
@@ -31,9 +30,9 @@ struct node{
 };
 
 vector<int> a, arr, logu;
-node st[400000];
-node version[100000][22];
-node * newest[400000];
+node st[400050];
+node version[100050][22];
+node * newest[400050];
 
 int n, m, l, r, k; 
 
@@ -78,19 +77,18 @@ int find_left_close(int key){
 int serach_cand(int l, int r, int k){
 	int hi = a.size() + 1;
 	int lo = 0;
-	int tmp = 0;
-	while(lo <= hi){
+	while(lo != hi){
 		int mid = lo + ((hi - lo) >> 1);
 		int cand = get_sum(l >= 0 ? &version[l][0] : &st[0], &version[r][0], 0, n - 1, 0, mid, 0);
-		if(cand >= k) tmp = mid, hi = mid - 1;
-		else lo = mid + 1;
+		if(cand < k) lo = mid + 1;
+		else hi = mid;
 	}
-	return tmp;
+	return lo;
 }
 
 
 int main(){
-	static double l2 = 0.30102999566398119521373889472449;
+	double l2 = 0.30102999566398119521373889472449;
 	clear(st);
 	clear(version);
 	clear(newest);
@@ -99,7 +97,7 @@ int main(){
 	a.assign(n, 0);
 	logu.assign(4 * n, 0);
 	arr.assign(n, 0);
-	FORI(4 * n - 1) logu[i + 1] = (int) (log(1.0 + i) / l2) + 1;
+	FORI(4 * n) logu[i + 1] = (int)(log(1.0 + i) / l2) + 1;
 	logu[0] = 0;
 	FORI(4 * n) newest[i] = &st[i];
 	construct(0, n - 1, 0);
@@ -108,7 +106,7 @@ int main(){
 	FORI(n) arr[i] = a[i];
 
 	sort(a.begin(), a.end());
-	unique(a.begin(), a.end());
+	a.resize(unique(a.begin(), a.end()) - a.begin());
 
 	FORI(n) update(0, n - 1, find_left_close(arr[i]), 0, i);
 
